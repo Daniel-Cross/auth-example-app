@@ -1,24 +1,66 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { Route, Redirect, BrowserRouter as Router } from "react-router-dom";
+import "./App.css";
+import Dashboard from "./components/Dashboard";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 function App() {
+  const [userDetails, setUserDetails] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [userAccount, setUserAccount] = useState();
+  const [redirect, setRedirect] = useState(false);
+
+  const handleChange = (e) => {
+    setUserDetails({
+      ...userDetails,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  console.log({ userDetails });
+  console.log({ userAccount });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <Route
+          exact
+          path="/"
+          render={() => (
+            <Login
+              handleChange={handleChange}
+              userDetails={userDetails}
+              setUserAccount={setUserAccount}
+              userAccount={userAccount}
+              setRedirect={setRedirect}
+              redirect={redirect}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/register"
+          render={() => (
+            <Register handleChange={handleChange} userDetails={userDetails} />
+          )}
+        />
+        <Route
+          exact
+          path="/dashboard"
+          render={() =>
+            redirect && userAccount ? (
+              <Dashboard userAccount={userAccount} />
+            ) : (
+              <Redirect to="/" />
+            )
+          }
+        />
+      </Router>
+    </>
   );
 }
 
